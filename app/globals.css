@@ -1,0 +1,145 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 204 100% 97%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 199 89% 48%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 199 89% 94%;
+    --secondary-foreground: 199 89% 28%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 199 89% 94%;
+    --accent-foreground: 199 89% 28%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 199 89% 48%;
+
+    --radius: 0.5rem;
+
+    --chart-1: 199 89% 48%;
+    --chart-2: 199 89% 28%;
+    --color-progress: hsl(199 89% 48%);
+    --color-count: hsl(199 89% 28%);
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 47.4% 11.2%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 47.4% 11.2%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 199 89% 48%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 199 89% 48%;
+
+    --chart-1: 199 89% 60%;
+    --chart-2: 199 89% 40%;
+    --color-progress: hsl(199 89% 60%);
+    --color-count: hsl(199 89% 40%);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground transition-colors duration-300;
+  }
+}
+
+/* Estilos personalizados para gráficos e indicadores de progresso */
+.progress-ring {
+  @apply relative inline-flex items-center justify-center rounded-full;
+  background: conic-gradient(theme("colors.sky.500") var(--value), theme("colors.sky.100") var(--value));
+}
+
+.progress-ring::before {
+  content: "";
+  @apply absolute rounded-full bg-white dark:bg-gray-800;
+  inset: 2px;
+}
+
+.progress-ring span {
+  @apply relative z-10 text-xs font-medium;
+}
+
+/* Animações para elementos de estatísticas */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stats-card {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.stats-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.stats-card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.stats-card:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.stats-card:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+/* Estilo para barras de progresso */
+.progress-bar-sky {
+  @apply h-2 overflow-hidden rounded-full bg-sky-100 dark:bg-sky-900/30;
+}
+
+.progress-bar-sky div {
+  @apply h-full bg-sky-500 transition-all duration-500;
+}
+
+/* Estilo para badges de progresso */
+.badge-sky {
+  @apply bg-sky-100 text-sky-800 dark:bg-sky-900 dark:text-sky-100 px-2 py-0.5 rounded-full text-xs font-medium;
+}
