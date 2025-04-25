@@ -76,7 +76,7 @@ export function AuthForm() {
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto border-sky-200 dark:border-sky-800 bg-white dark:bg-gray-800">
+    <Card className="w-full max-w-md mx-auto border-sky-200 dark:border-sky-800 bg-white dark:bg-gray-800 shadow-lg transition-all duration-300 hover:shadow-xl animate-in fade-in-50 slide-in-from-bottom-10">
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl text-center text-sky-800 dark:text-sky-200">
           {activeTab === "login" ? "Entrar" : "Criar Conta"}
@@ -194,7 +194,10 @@ export function AuthForm() {
         </Tabs>
 
         {error && (
-          <Alert variant="destructive" className="mt-4 bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800">
+          <Alert
+            variant="destructive"
+            className="mt-4 bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 animate-in fade-in-50"
+          >
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Erro</AlertTitle>
             <AlertDescription>{error}</AlertDescription>

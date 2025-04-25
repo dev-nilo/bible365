@@ -1,5 +1,11 @@
 import { getSupabase } from "./supabase"
-import { loadReadingProgress, saveReadingProgress, type ReadingProgress } from "./storage-utils"
+import {
+  loadReadingProgress,
+  saveReadingProgress,
+  type ReadingProgress,
+  loadPlanoSelecionado,
+  savePlanoSelecionado,
+} from "./storage-utils"
 
 // Status de sincronização
 export type SyncStatus = "idle" | "syncing" | "success" | "error"
@@ -45,7 +51,9 @@ export async function syncReadingProgress(): Promise<{
         return { status: "error", message: "Erro ao criar perfil de usuário" }
       }
 
-      profileData = newProfile
+      profileData = newProfile as any
+    } else {
+      profileData = profileData as any
     }
 
     // Obter o progresso local
@@ -109,6 +117,17 @@ export async function syncReadingProgress(): Promise<{
       console.error("Erro ao atualizar data de sincronização:", updateError)
     }
 
+    // Sincronizar o plano selecionado
+    const planoSelecionado = loadPlanoSelecionado() || "mcheyne"
+    await supabase.from("user_preferences").upsert(
+      {
+        user_id: profileData.id,
+        plano_selecionado: planoSelecionado,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id" },
+    )
+
     return { status: "success", timestamp: now }
   } catch (error) {
     console.error("Erro ao sincronizar progresso:", error)
@@ -161,6 +180,18 @@ export async function loadRemoteProgress(): Promise<{
     remoteProgressData?.forEach((item) => {
       remoteProgress[item.reading_id] = item.completed
     })
+
+    // Carregar preferências do usuário
+    const { data: userPrefs } = await supabase
+      .from("user_preferences")
+      .select("plano_selecionado")
+      .eq("user_id", profileData.id)
+      .single()
+
+    // Se houver um plano selecionado, salvar localmente
+    if (userPrefs?.plano_selecionado) {
+      savePlanoSelecionado(userPrefs.plano_selecionado)
+    }
 
     return {
       status: "success",

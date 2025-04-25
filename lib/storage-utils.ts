@@ -4,6 +4,8 @@
 
 // Chave usada para armazenar o progresso de leitura
 const STORAGE_KEY = "bibliaProgress"
+// Chave para armazenar o plano selecionado
+const PLANO_KEY = "bibliaPlanoSelecionado"
 
 // Tipo para o progresso de leitura
 export type ReadingProgress = Record<string, boolean>
@@ -19,6 +21,7 @@ export function isLocalStorageAvailable(): boolean {
     localStorage.removeItem(testKey)
     return result
   } catch (e) {
+    console.error("localStorage não está disponível:", e)
     return false
   }
 }
@@ -56,13 +59,14 @@ export function loadReadingProgress(): ReadingProgress {
   try {
     // Verificar se o localStorage está disponível
     if (!isLocalStorageAvailable()) {
-      console.warn("LocalStorage não está disponível. Usando dados vazios.")
+      console.warn("loadReadingProgress: LocalStorage não está disponível. Usando dados vazios.")
       return {}
     }
 
     // Tentar carregar os dados
     const savedData = localStorage.getItem(STORAGE_KEY)
     if (!savedData) {
+      console.log("loadReadingProgress: Nenhum dado encontrado no localStorage")
       return {}
     }
 
@@ -71,13 +75,14 @@ export function loadReadingProgress(): ReadingProgress {
 
     // Validar os dados
     if (!isValidProgressData(parsedData)) {
-      console.warn("Dados de progresso inválidos encontrados. Usando dados vazios.")
+      console.warn("loadReadingProgress: Dados de progresso inválidos encontrados. Usando dados vazios.")
       return {}
     }
 
+    console.log(`loadReadingProgress: Carregados ${Object.keys(parsedData).length} itens de progresso`)
     return parsedData
   } catch (error) {
-    console.error("Erro ao carregar progresso:", error)
+    console.error("loadReadingProgress: Erro ao carregar progresso:", error)
     return {}
   }
 }
@@ -89,21 +94,22 @@ export function saveReadingProgress(progress: ReadingProgress): boolean {
   try {
     // Verificar se o localStorage está disponível
     if (!isLocalStorageAvailable()) {
-      console.warn("LocalStorage não está disponível. Não foi possível salvar o progresso.")
+      console.warn("saveReadingProgress: LocalStorage não está disponível. Não foi possível salvar o progresso.")
       return false
     }
 
     // Validar os dados antes de salvar
     if (!isValidProgressData(progress)) {
-      console.error("Tentativa de salvar dados de progresso inválidos.")
+      console.error("saveReadingProgress: Tentativa de salvar dados de progresso inválidos.")
       return false
     }
 
     // Salvar os dados
     localStorage.setItem(STORAGE_KEY, JSON.stringify(progress))
+    console.log(`saveReadingProgress: Salvos ${Object.keys(progress).length} itens de progresso`)
     return true
   } catch (error) {
-    console.error("Erro ao salvar progresso:", error)
+    console.error("saveReadingProgress: Erro ao salvar progresso:", error)
     return false
   }
 }
@@ -115,44 +121,62 @@ export function clearReadingProgress(): boolean {
   try {
     // Verificar se o localStorage está disponível
     if (!isLocalStorageAvailable()) {
-      console.warn("LocalStorage não está disponível. Não foi possível limpar o progresso.")
+      console.warn("clearReadingProgress: LocalStorage não está disponível. Não foi possível limpar o progresso.")
       return false
     }
 
     // Limpar os dados
     localStorage.removeItem(STORAGE_KEY)
+    console.log("clearReadingProgress: Progresso limpo com sucesso")
     return true
   } catch (error) {
-    console.error("Erro ao limpar progresso:", error)
+    console.error("clearReadingProgress: Erro ao limpar progresso:", error)
     return false
   }
 }
 
 /**
- * Migra dados de versões anteriores para o formato atual
- * (Útil para futuras atualizações da estrutura de dados)
+ * Salva o plano de leitura selecionado
  */
-export function migrateOldData(): ReadingProgress {
+export function savePlanoSelecionado(planoId: string): boolean {
   try {
-    // Verificar se o localStorage está disponível
+    console.log("savePlanoSelecionado: Tentando salvar plano:", planoId)
+
     if (!isLocalStorageAvailable()) {
-      return {}
+      console.warn(
+        "savePlanoSelecionado: LocalStorage não está disponível. Não foi possível salvar o plano selecionado.",
+      )
+      return false
     }
 
-    // Verificar se existem dados no formato antigo
-    // Exemplo: se no futuro mudarmos o formato, podemos migrar aqui
-    const oldData = localStorage.getItem("oldFormatKey")
-    if (!oldData) {
-      return {}
-    }
-
-    // Lógica de migração aqui
-    // ...
-
-    // Retornar dados migrados
-    return {}
+    // Salvar os dados
+    localStorage.setItem(PLANO_KEY, planoId)
+    console.log("savePlanoSelecionado: Plano salvo com sucesso:", planoId)
+    return true
   } catch (error) {
-    console.error("Erro ao migrar dados antigos:", error)
-    return {}
+    console.error("savePlanoSelecionado: Erro ao salvar plano selecionado:", error)
+    return false
+  }
+}
+
+/**
+ * Carrega o plano de leitura selecionado
+ */
+export function loadPlanoSelecionado(): string | null {
+  try {
+    console.log("loadPlanoSelecionado: Tentando carregar plano selecionado")
+
+    if (!isLocalStorageAvailable()) {
+      console.warn("loadPlanoSelecionado: LocalStorage não está disponível. Usando plano padrão.")
+      return null
+    }
+
+    // Tentar carregar os dados
+    const planoId = localStorage.getItem(PLANO_KEY)
+    console.log("loadPlanoSelecionado: Plano carregado:", planoId)
+    return planoId
+  } catch (error) {
+    console.error("loadPlanoSelecionado: Erro ao carregar plano selecionado:", error)
+    return null
   }
 }
